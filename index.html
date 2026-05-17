@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mother's Day Memory Wall – Family Share</title>
+    <title>Mother's Day Memory Wall – Edit & Crop</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -21,23 +21,53 @@
         input, textarea { width: 100%; padding: 12px 16px; border-radius: 2rem; border: 1px solid #fadacf; font-size: 1rem; background: white; }
         button { background: #e06e4a; color: white; border: none; padding: 12px 24px; border-radius: 2rem; font-weight: bold; cursor: pointer; font-size: 1rem; margin-right: 10px; margin-top: 10px; }
         .memory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.8rem; }
-        .memory-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .memory-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: transform 0.2s; position: relative; }
         .memory-card:hover { transform: translateY(-4px); }
         .card-img { height: 200px; background: #fbeee9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .card-img img { width: 100%; height: 100%; object-fit: cover; }
         .card-content { padding: 1.2rem; }
         .card-title { font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
         .card-message { color: #5d3d2e; line-height: 1.4; margin: 10px 0; }
-        .card-date { font-size: 0.7rem; color: #bf8d74; border-top: 1px solid #f3ded4; padding-top: 8px; display: flex; justify-content: space-between; }
-        .delete-btn { background: none; border: none; color: #d4947a; cursor: pointer; font-size: 1rem; }
+        .card-date { font-size: 0.7rem; color: #bf8d74; border-top: 1px solid #f3ded4; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .card-buttons { display: flex; gap: 12px; }
+        .edit-btn, .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px 8px; border-radius: 2rem; transition: 0.2s; }
+        .edit-btn:hover { background: #e6d5cb; }
+        .delete-btn:hover { background: #f5ddd2; color: #c23b16; }
         footer { text-align: center; margin-top: 2rem; color: #c2927b; }
+
+        /* Modal for crop/edit */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .crop-canvas-container { text-align: center; margin: 1rem 0; }
+        canvas.crop-canvas { max-width: 100%; border: 2px solid #e06e4a; cursor: crosshair; }
+        .crop-controls { margin: 1rem 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .crop-controls label { font-weight: bold; }
+        input[type="range"] { width: 200px; }
+        .status { margin-top: 12px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="hero">
         <h1>🌷 Mother's Day Memory Wall</h1>
-        <p>Add memories, share the exported file with family – they can import and see everything!</p>
+        <p>Add, edit, crop images – share with family via export/import</p>
     </div>
 
     <div class="add-card">
@@ -50,10 +80,14 @@
         </div>
         <div class="form-group">
             <input type="file" id="imageFile" accept="image/*">
-            <small>📸 Large images will be compressed automatically</small>
+            <small>📸 Choose image – you can crop/resize before adding</small>
+            <div id="imagePreviewContainer" style="margin-top: 10px; display: none;">
+                <img id="imagePreview" style="max-width: 200px; max-height: 150px; border-radius: 1rem;">
+                <button type="button" id="cropBtn" style="background:#b57962; margin-left: 10px;">✂️ Crop / Resize</button>
+            </div>
         </div>
         <button id="addBtn">❤️ Celebrate Mom</button>
-        <div id="statusMsg" style="margin-top: 12px; font-size: 0.85rem;"></div>
+        <div id="statusMsg" class="status"></div>
     </div>
 
     <div class="share-card">
@@ -61,34 +95,56 @@
         <button id="exportBtn">💾 Export all memories (save as file)</button>
         <button id="importBtn">📂 Import memories from file</button>
         <button id="resetBtn" style="background:#b57962;">🗑️ Reset all memories (clear)</button>
-        <p style="margin-top: 12px; font-size: 0.8rem;">To share: Export file → send via WhatsApp/email → family clicks Import and selects the file.</p>
+        <p style="margin-top: 12px; font-size: 0.8rem;">To share: Export file → send → family clicks Import.</p>
     </div>
 
     <div id="memoriesGrid" class="memory-grid">Loading...</div>
-    <footer>✨ Memories are saved in your browser. Export + import to share across devices.</footer>
+    <footer>✨ Memories saved in browser. Edit any memory with the ✏️ button.</footer>
+</div>
+
+<!-- Modal for cropping / editing -->
+<div id="cropModal" class="modal">
+    <div class="modal-content">
+        <h3>✂️ Crop & Resize Image</h3>
+        <div class="crop-canvas-container">
+            <canvas id="cropCanvas" class="crop-canvas"></canvas>
+        </div>
+        <div class="crop-controls">
+            <label>🔍 Zoom: <input type="range" id="zoomSlider" min="0.5" max="3" step="0.01" value="1"></label>
+            <button id="applyCropBtn">✔️ Apply Crop</button>
+            <button id="cancelCropBtn">❌ Cancel</button>
+        </div>
+        <p>Drag on the image to select the area you want to keep. Use zoom if needed.</p>
+    </div>
 </div>
 
 <script>
     // ---------- LOCAL STORAGE ----------
     const STORAGE_KEY = 'mothers_day_memories';
+    let memories = [];
+    let pendingImageData = null;        // holds cropped image before adding memory
+    let editMemoryId = null;            // id of memory being edited
+    let cropOriginalImage = null;       // original image (HTMLImageElement) for crop
+    let cropRect = { x: 0, y: 0, w: 0, h: 0 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let canvasElem = null, ctx = null;
+    let zoom = 1;
 
     function loadMemoriesFromStorage() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 return JSON.parse(stored);
-            } catch(e) {
-                return [];
-            }
+            } catch(e) { return []; }
         }
         return [];
     }
-
-    function saveMemoriesToStorage(memories) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(memories));
+    function saveMemoriesToStorage(mems) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mems));
     }
 
-    let memories = loadMemoriesFromStorage();
+    memories = loadMemoriesFromStorage();
 
     // Helper functions
     function formatDate(dateObj) {
@@ -97,12 +153,12 @@
         if (isNaN(d.getTime())) return "recently";
         return d.toLocaleString();
     }
-
     function escapeHtml(str) {
         if (!str) return "";
         return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
     }
 
+    // Compress (fallback if needed)
     function compressImage(file, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -128,7 +184,7 @@
         });
     }
 
-    // Render memories
+    // Render memories with Edit buttons
     function renderMemories() {
         const container = document.getElementById('memoriesGrid');
         if (!container) return;
@@ -145,13 +201,17 @@
                     <div class="card-title">${escapeHtml(mem.title)}</div>
                     <div class="card-message">${escapeHtml(mem.message || '💖')}</div>
                     <div class="card-date">
-                        ${formatDate(mem.createdAt)}
-                        <button class="delete-btn" data-idx="${idx}">🗑️ Delete</button>
+                        <span>${formatDate(mem.createdAt)}</span>
+                        <div class="card-buttons">
+                            <button class="edit-btn" data-id="${mem.id}" data-idx="${idx}">✏️ Edit</button>
+                            <button class="delete-btn" data-idx="${idx}">🗑️</button>
+                        </div>
                     </div>
                 </div>
             </div>
         `).join('');
-        // Attach delete events
+
+        // Delete events
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = parseInt(btn.getAttribute('data-idx'));
@@ -164,6 +224,14 @@
                 }
             });
         });
+        // Edit events
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                const mem = memories[idx];
+                if (mem) openEditModal(mem.id, idx);
+            });
+        });
     }
 
     function showStatus(msg, color = '#5fa03e') {
@@ -173,26 +241,183 @@
         setTimeout(() => { if (statusDiv.innerHTML === msg) statusDiv.innerHTML = ''; }, 3000);
     }
 
-    // Add new memory
+    // ---------- CROP TOOL ----------
+    function initCrop(imageUrl, callback) {
+        cropOriginalImage = new Image();
+        cropOriginalImage.onload = () => {
+            canvasElem = document.getElementById('cropCanvas');
+            ctx = canvasElem.getContext('2d');
+            zoom = 1;
+            document.getElementById('zoomSlider').value = 1;
+            drawCanvas();
+            attachCropEvents();
+            pendingImageData = null; // will be set after crop
+            window.cropCallback = callback;
+        };
+        cropOriginalImage.src = imageUrl;
+    }
+
+    function drawCanvas() {
+        if (!cropOriginalImage || !ctx) return;
+        const imgW = cropOriginalImage.width;
+        const imgH = cropOriginalImage.height;
+        const canvas = canvasElem;
+        canvas.width = imgW * zoom;
+        canvas.height = imgH * zoom;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(cropOriginalImage, 0, 0, canvas.width, canvas.height);
+        // draw crop rectangle if defined
+        if (cropRect.w > 0 && cropRect.h > 0) {
+            ctx.save();
+            ctx.strokeStyle = '#e06e4a';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(cropRect.x, cropRect.y, cropRect.w, cropRect.h);
+            ctx.restore();
+        }
+    }
+
+    function attachCropEvents() {
+        const canvas = canvasElem;
+        canvas.addEventListener('mousedown', onMouseDown);
+        canvas.addEventListener('mousemove', onMouseMove);
+        canvas.addEventListener('mouseup', onMouseUp);
+        document.getElementById('zoomSlider').oninput = (e) => {
+            zoom = parseFloat(e.target.value);
+            if (cropRect.w) { // adjust rect proportionally?
+                cropRect = { x: 0, y: 0, w: 0, h: 0 };
+            }
+            drawCanvas();
+        };
+    }
+
+    function getMousePos(e) {
+        const rect = canvasElem.getBoundingClientRect();
+        const scaleX = canvasElem.width / rect.width;
+        const scaleY = canvasElem.height / rect.height;
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top) * scaleY;
+        return { x: Math.min(Math.max(0, mouseX), canvasElem.width), y: Math.min(Math.max(0, mouseY), canvasElem.height) };
+    }
+
+    function onMouseDown(e) {
+        isDragging = true;
+        const pos = getMousePos(e);
+        dragStart = pos;
+        cropRect = { x: pos.x, y: pos.y, w: 0, h: 0 };
+        drawCanvas();
+    }
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        const pos = getMousePos(e);
+        cropRect.w = pos.x - dragStart.x;
+        cropRect.h = pos.y - dragStart.y;
+        drawCanvas();
+    }
+    function onMouseUp() {
+        isDragging = false;
+        if (cropRect.w < 0) {
+            cropRect.x = cropRect.x + cropRect.w;
+            cropRect.w = -cropRect.w;
+        }
+        if (cropRect.h < 0) {
+            cropRect.y = cropRect.y + cropRect.h;
+            cropRect.h = -cropRect.h;
+        }
+        drawCanvas();
+    }
+
+    function performCrop() {
+        if (!cropOriginalImage || !cropRect.w || !cropRect.h) {
+            alert('Please drag a rectangle on the image to select crop area.');
+            return;
+        }
+        const cropCanvas = document.createElement('canvas');
+        const cropCtx = cropCanvas.getContext('2d');
+        const srcW = cropOriginalImage.width;
+        const srcH = cropOriginalImage.height;
+        const zoomFactor = zoom;
+        const rectX = cropRect.x / zoomFactor;
+        const rectY = cropRect.y / zoomFactor;
+        const rectW = cropRect.w / zoomFactor;
+        const rectH = cropRect.h / zoomFactor;
+        cropCanvas.width = rectW;
+        cropCanvas.height = rectH;
+        cropCtx.drawImage(cropOriginalImage, rectX, rectY, rectW, rectH, 0, 0, rectW, rectH);
+        const croppedDataUrl = cropCanvas.toDataURL('image/jpeg', 0.9);
+        if (window.cropCallback) {
+            window.cropCallback(croppedDataUrl);
+        }
+        closeCropModal();
+    }
+
+    function openCropModal(imageDataUrl, callback) {
+        const modal = document.getElementById('cropModal');
+        modal.style.display = 'flex';
+        initCrop(imageDataUrl, callback);
+    }
+    function closeCropModal() {
+        const modal = document.getElementById('cropModal');
+        modal.style.display = 'none';
+        if (canvasElem && ctx) {
+            // cleanup events
+            canvasElem.removeEventListener('mousedown', onMouseDown);
+            canvasElem.removeEventListener('mousemove', onMouseMove);
+            canvasElem.removeEventListener('mouseup', onMouseUp);
+        }
+    }
+
+    // ---------- ADD MEMORY with cropping ----------
+    let tempSelectedFile = null;
+    document.getElementById('imageFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const preview = document.getElementById('imagePreview');
+                preview.src = ev.target.result;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+                tempSelectedFile = ev.target.result; // store for crop
+            };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            tempSelectedFile = null;
+        }
+    });
+    document.getElementById('cropBtn').addEventListener('click', () => {
+        if (tempSelectedFile) {
+            openCropModal(tempSelectedFile, (croppedData) => {
+                tempSelectedFile = croppedData;
+                document.getElementById('imagePreview').src = croppedData;
+                showStatus('Image cropped! Ready to add.', '#5fa03e');
+            });
+        } else {
+            showStatus('Please select an image first.', '#c25b3a');
+        }
+    });
+
     async function addMemory() {
         const title = document.getElementById('title').value.trim();
         const message = document.getElementById('message').value.trim();
-        const fileInput = document.getElementById('imageFile');
-        const file = fileInput.files[0];
+        let imageData = tempSelectedFile || null;
         if (!title) {
             showStatus('💝 Please enter a title!', '#c25b3a');
             return;
         }
-        let imageData = null;
-        if (file) {
-            showStatus('📸 Compressing image...', '#b85633');
+        // compress if needed (already cropped might be large)
+        if (imageData && imageData.length > 500000) {
+            showStatus('📸 Compressing large image...', '#b85633');
             try {
-                imageData = await compressImage(file);
-                showStatus('✅ Image ready!', '#5fa03e');
-            } catch(err) {
-                showStatus('⚠️ Compression failed, using without photo.', '#c25b3a');
-                imageData = null;
-            }
+                // convert dataURL to file-like? We'll compress via canvas
+                const img = await new Promise((resolve) => { let i = new Image(); i.onload = () => resolve(i); i.src = imageData; });
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > 800) { h = (h * 800) / w; w = 800; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                imageData = canvas.toDataURL('image/jpeg', 0.7);
+            } catch(e) { console.warn(e); }
         }
         const newMemory = {
             id: Date.now(),
@@ -204,13 +429,66 @@
         memories.unshift(newMemory);
         saveMemoriesToStorage(memories);
         renderMemories();
+        // reset form
         document.getElementById('title').value = '';
         document.getElementById('message').value = '';
-        fileInput.value = '';
+        document.getElementById('imageFile').value = '';
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+        tempSelectedFile = null;
         showStatus('🎉 Memory added!', '#5fa03e');
     }
 
-    // Export all memories to a JSON file
+    // ---------- EDIT MEMORY ----------
+    function openEditModal(memId, idx) {
+        const mem = memories.find(m => m.id === memId);
+        if (!mem) return;
+        editMemoryId = memId;
+        // Create a simple inline edit form? Use modal again.
+        const newTitle = prompt('Edit title:', mem.title);
+        if (newTitle === null) return;
+        const newMessage = prompt('Edit message:', mem.message || '');
+        if (newMessage === null) return;
+        const changeImage = confirm('Do you want to change the image? Click OK to choose a new image (you can crop). Cancel to keep current.');
+        if (changeImage) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        openCropModal(ev.target.result, async (croppedData) => {
+                            mem.imageData = croppedData;
+                            mem.title = newTitle;
+                            mem.message = newMessage;
+                            mem.createdAt = new Date().toISOString();
+                            saveMemoriesToStorage(memories);
+                            renderMemories();
+                            showStatus('Memory updated with new image!', '#5fa03e');
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // no new image, just update text
+                    mem.title = newTitle;
+                    mem.message = newMessage;
+                    saveMemoriesToStorage(memories);
+                    renderMemories();
+                    showStatus('Memory updated!', '#5fa03e');
+                }
+            };
+            fileInput.click();
+        } else {
+            mem.title = newTitle;
+            mem.message = newMessage;
+            saveMemoriesToStorage(memories);
+            renderMemories();
+            showStatus('Memory updated!', '#5fa03e');
+        }
+    }
+
+    // ---------- EXPORT / IMPORT / RESET ----------
     function exportMemories() {
         const dataStr = JSON.stringify(memories, null, 2);
         const blob = new Blob([dataStr], {type: 'application/json'});
@@ -222,17 +500,14 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showStatus('📁 Memories exported! Send the file to family.', '#5fa03e');
+        showStatus('📁 Memories exported!', '#5fa03e');
     }
-
-    // Import memories from JSON file
     function importMemories(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
                 if (Array.isArray(imported)) {
-                    // Merge: add imported memories on top (avoid duplicates by id)
                     const existingIds = new Set(memories.map(m => m.id));
                     const newMemories = imported.filter(m => !existingIds.has(m.id));
                     memories = [...newMemories, ...memories];
@@ -248,8 +523,6 @@
         };
         reader.readAsText(file);
     }
-
-    // Reset all memories
     function resetMemories() {
         if (confirm('⚠️ This will delete ALL memories. Are you sure?')) {
             memories = [];
@@ -259,7 +532,7 @@
         }
     }
 
-    // Set up event listeners
+    // Event listeners
     document.getElementById('addBtn').addEventListener('click', addMemory);
     document.getElementById('exportBtn').addEventListener('click', exportMemories);
     document.getElementById('resetBtn').addEventListener('click', resetMemories);
@@ -267,13 +540,12 @@
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'application/json';
-        input.onchange = (e) => {
-            if (e.target.files.length) importMemories(e.target.files[0]);
-        };
+        input.onchange = (e) => { if (e.target.files.length) importMemories(e.target.files[0]); };
         input.click();
     });
+    document.getElementById('applyCropBtn').addEventListener('click', performCrop);
+    document.getElementById('cancelCropBtn').addEventListener('click', closeCropModal);
 
-    // Initial render
     renderMemories();
 </script>
 </body>
