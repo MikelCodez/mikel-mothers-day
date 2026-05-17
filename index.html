@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mother's Day Memory Wall | Family Shared</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <title>Mother's Day · Family Memory Wall</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -12,7 +12,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #fff5f0 0%, #ffe9e4 100%);
@@ -20,28 +19,13 @@
             padding: 2rem 1.5rem;
             min-height: 100vh;
         }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #fbe4db;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #e6a68b;
-            border-radius: 10px;
-        }
-
         .container {
             max-width: 1300px;
             margin: 0 auto;
         }
-
-        /* share key banner */
-        .share-banner {
-            background: linear-gradient(135deg, #fff0e6, #ffe4d8);
-            border-radius: 50px;
+        .family-bar {
+            background: #fff0e6;
+            border-radius: 60px;
             padding: 0.8rem 1.5rem;
             margin-bottom: 1.5rem;
             display: flex;
@@ -51,74 +35,61 @@
             gap: 1rem;
             border: 2px solid #f3c5b0;
         }
-        .share-banner label {
-            font-weight: 700;
+        .family-bar strong {
             color: #b44a2a;
         }
-        .family-key-input {
+        .share-link-box {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             align-items: center;
-        }
-        .family-key-input input {
-            padding: 8px 16px;
-            border-radius: 40px;
-            border: 1px solid #e6aa92;
-            font-family: monospace;
-            font-size: 1rem;
             background: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
         }
-        .key-btn {
+        .share-link-box input {
+            border: none;
+            background: transparent;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            width: 240px;
+        }
+        .copy-btn, .new-key-btn {
             background: #e27b58;
             border: none;
-            padding: 8px 20px;
+            padding: 6px 14px;
             border-radius: 40px;
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 0.8rem;
         }
-        .key-btn:hover {
-            background: #c95a38;
+        .new-key-btn {
+            background: #b57962;
         }
-        .key-hint {
-            font-size: 0.75rem;
-            color: #c27456;
-        }
-
         .hero {
             text-align: center;
             margin-bottom: 2rem;
         }
         .hero h1 {
-            font-size: 3.2rem;
-            background: linear-gradient(135deg, #c25b3a, #e27b58, #b9472a);
+            font-size: 3rem;
+            background: linear-gradient(135deg, #c25b3a, #e27b58);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.5px;
         }
-        .subhead {
-            font-size: 1.1rem;
-            color: #7c4c38;
-            background: rgba(255, 245, 240, 0.7);
-            display: inline-block;
-            padding: 0.4rem 1.5rem;
-            border-radius: 60px;
-        }
-
         .add-memory-card {
             background: rgba(255, 255, 250, 0.95);
             border-radius: 42px;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
         }
         .form-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.2rem;
+            gap: 1rem;
         }
         .form-field {
             flex: 1 1 240px;
@@ -126,23 +97,12 @@
         .form-field.full {
             flex: 1 1 100%;
         }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 6px;
-            color: #633e2c;
-        }
         input, textarea {
             width: 100%;
             padding: 12px 16px;
             border-radius: 28px;
             border: 1.5px solid #fadacf;
             background: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-        }
-        textarea {
-            resize: vertical;
         }
         .btn-add {
             background: linear-gradient(95deg, #e06e4a, #c9502e);
@@ -151,38 +111,25 @@
             font-weight: bold;
             padding: 12px 28px;
             border-radius: 40px;
-            font-size: 1rem;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .compress-badge {
-            font-size: 0.7rem;
-            background: #e6b8a3;
-            padding: 2px 12px;
-            border-radius: 40px;
-            display: inline-block;
-            margin-top: 8px;
         }
         .memory-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 1.8rem;
         }
         .memory-card {
             background: white;
-            border-radius: 36px;
+            border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.08);
             transition: transform 0.2s;
         }
         .memory-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
         }
         .card-img {
-            width: 100%;
-            height: 210px;
+            height: 200px;
             background: #fbeee9;
             display: flex;
             align-items: center;
@@ -195,34 +142,27 @@
             object-fit: cover;
         }
         .img-placeholder {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: #e2a085;
-            background: #fae6de;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .card-content {
-            padding: 1.3rem;
+            padding: 1.2rem;
         }
         .card-title {
-            font-size: 1.3rem;
             font-weight: 700;
-            color: #492e21;
+            font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
         .card-message {
             color: #5d3d2e;
-            line-height: 1.45;
-            margin: 12px 0;
+            line-height: 1.4;
+            margin: 10px 0;
         }
         .card-date {
             font-size: 0.7rem;
             color: #bf8d74;
             border-top: 1px solid #f3ded4;
-            padding-top: 10px;
+            padding-top: 8px;
             display: flex;
             justify-content: space-between;
         }
@@ -231,10 +171,6 @@
             border: none;
             color: #d4947a;
             cursor: pointer;
-            font-size: 1.1rem;
-        }
-        .delete-memory:hover {
-            color: #c23b16;
         }
         footer {
             margin-top: 3rem;
@@ -243,69 +179,57 @@
         }
         @media (max-width: 680px) {
             body { padding: 1rem; }
-            .hero h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Family Share Key Section -->
-    <div class="share-banner">
-        <div>
-            <i class="fas fa-users" style="color:#c95a38"></i> 
-            <strong>Family Memory Wall</strong> — share a secret key with your family
+    <div class="family-bar">
+        <div><i class="fas fa-users"></i> <strong>Family Memory Wall</strong></div>
+        <div class="share-link-box">
+            <input type="text" id="shareableLinkInput" readonly>
+            <button id="copyLinkBtn" class="copy-btn"><i class="fas fa-copy"></i> Copy link</button>
+            <button id="newFamilyKeyBtn" class="new-key-btn"><i class="fas fa-plus"></i> Create new key</button>
         </div>
-        <div class="family-key-input">
-            <input type="text" id="familyKeyInput" placeholder="Enter family key" maxlength="30">
-            <button id="loadFamilyKeyBtn" class="key-btn"><i class="fas fa-key"></i> Load/Save</button>
-            <button id="resetToDefaultKey" class="key-btn" style="background:#b57962;"><i class="fas fa-plus-circle"></i> New Key</button>
-        </div>
-        <div class="key-hint"><i class="fas fa-info-circle"></i> Everyone using the same key sees & adds memories together!</div>
     </div>
 
     <div class="hero">
-        <h1><i class="fas fa-heart"></i> Mother's Day · Shared Garden</h1>
-        <div class="subhead">for the queen of our family — with love, together</div>
+        <h1><i class="fas fa-heart"></i> Mother's Day Garden</h1>
+        <p style="margin-top: 8px;">Share the link with family — everyone adds to the same wall!</p>
     </div>
 
     <div class="add-memory-card">
-        <h2><i class="fas fa-plus-circle"></i> Add a new memory</h2>
+        <h2><i class="fas fa-plus-circle"></i> Add a memory</h2>
         <div class="form-grid">
             <div class="form-field">
-                <label><i class="far fa-heart"></i> Title *</label>
-                <input type="text" id="memoryTitle" placeholder="e.g., 'Mom's Hug', 'Sunday Dinner'">
+                <label>Title</label>
+                <input type="text" id="memoryTitle" placeholder="e.g., 'Mom's hug'">
             </div>
             <div class="form-field full">
-                <label><i class="fas fa-comment-dots"></i> Message</label>
+                <label>Message</label>
                 <textarea id="memoryMessage" rows="2" placeholder="Write something sweet..."></textarea>
             </div>
             <div class="form-field">
-                <label><i class="fas fa-camera"></i> Add a picture (auto-compressed)</label>
-                <input type="file" id="memoryImage" accept="image/jpeg,image/png,image/webp,image/gif">
-                <div class="compress-badge" id="compressStatus"><i class="fas fa-magic"></i> Images > 1MB will be compressed</div>
+                <label>Photo (auto-compressed)</label>
+                <input type="file" id="memoryImage" accept="image/*">
+                <small id="compressHint" style="color:#b85633;">📸 Images > 1MB will be compressed</small>
             </div>
-            <div class="form-field" style="display: flex; align-items: flex-end;">
-                <button class="btn-add" id="addMemoryBtn"><i class="fas fa-save"></i> Celebrate moment</button>
+            <div class="form-field">
+                <button class="btn-add" id="addMemoryBtn"><i class="fas fa-save"></i> Celebrate</button>
             </div>
         </div>
-        <div id="formStatus" style="margin-top: 12px; font-size:0.85rem;"></div>
+        <div id="formStatus" style="margin-top: 12px;"></div>
     </div>
 
     <div id="memoriesContainer" class="memory-grid"></div>
-    <footer>
-        <i class="fas fa-heart" style="color:#e06e4a;"></i> Every memory saved with love — share the family key!
-    </footer>
+    <footer><i class="fas fa-heart" style="color:#e06e4a;"></i> Every memory saved with love — share the link!</footer>
 </div>
 
 <script>
-    // ---------- Image Compression Function (Client Side) ----------
+    // ---------- Image compression (client-side) ----------
     function compressImage(file, maxWidth = 800, quality = 0.8) {
         return new Promise((resolve, reject) => {
-            if (!file.type.startsWith('image/')) {
-                reject(new Error('Not an image file'));
-                return;
-            }
-            
+            if (!file.type.startsWith('image/')) return reject('Not an image');
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (e) => {
@@ -314,126 +238,111 @@
                 img.onload = () => {
                     let width = img.width;
                     let height = img.height;
-                    
-                    // Calculate new dimensions if needed
                     if (width > maxWidth) {
                         height = (height * maxWidth) / width;
                         width = maxWidth;
                     }
-                    
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Compress and get as base64 (JPEG for smaller size)
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                    resolve(compressedDataUrl);
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
                 };
-                img.onerror = () => reject(new Error('Image loading failed'));
+                img.onerror = reject;
             };
-            reader.onerror = () => reject(new Error('File reading failed'));
+            reader.onerror = reject;
         });
     }
 
-    // ---------- Storage with Family Key ----------
-    const STORAGE_PREFIX = "mothersday_family_";
-    
-    function getStorageKey(familyKey) {
-        if (!familyKey) familyKey = "default_mom_memories";
-        // Sanitize key for localStorage
-        const safeKey = familyKey.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50);
-        return STORAGE_PREFIX + safeKey;
+    // ---------- Family key from URL hash ----------
+    function getFamilyKeyFromURL() {
+        let hash = window.location.hash.substring(1); // remove #
+        if (!hash) {
+            // If no hash, check localStorage for last used key, else generate a default
+            let lastKey = localStorage.getItem('last_family_key');
+            if (lastKey) return lastKey;
+            return "MothersDay2025";
+        }
+        // Save to localStorage so next time they remember
+        localStorage.setItem('last_family_key', hash);
+        return hash;
     }
-    
-    let currentFamilyKey = localStorage.getItem("current_family_key") || "Mothers2025";
-    let memories = [];
-    
-    function loadMemoriesFromKey(key) {
-        const storageKey = getStorageKey(key);
-        const stored = localStorage.getItem(storageKey);
+
+    let currentFamilyKey = getFamilyKeyFromURL();
+    // Update URL hash if it's not already set or different
+    if (window.location.hash !== `#${currentFamilyKey}`) {
+        window.location.hash = currentFamilyKey;
+    }
+
+    // Storage key
+    function getStorageKey(key) {
+        return `mothersday_family_${key.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+    }
+
+    // Load memories
+    function loadMemories() {
+        const stored = localStorage.getItem(getStorageKey(currentFamilyKey));
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
                 if (Array.isArray(parsed)) return parsed;
             } catch(e) {}
         }
-        // Default memories for a fresh key
         return [
             {
-                id: Date.now() + "-default1",
+                id: Date.now() + "-example1",
                 title: "Our First Memory",
-                message: "Mom, you make every day special. Love from all of us 💕",
+                message: "Mom, you're the heart of our family ❤️",
                 imageData: null,
-                createdAt: new Date().toISOString(),
-                author: "Family"
-            },
-            {
-                id: Date.now() + "-default2",
-                title: "Grateful Hearts",
-                message: "Thank you for everything, Mom! This wall is for you.",
-                imageData: null,
-                createdAt: new Date().toISOString(),
-                author: "Family"
+                createdAt: new Date().toISOString()
             }
         ];
     }
-    
-    function saveMemoriesToKey(key, memoriesArray) {
-        const storageKey = getStorageKey(key);
-        localStorage.setItem(storageKey, JSON.stringify(memoriesArray));
+
+    let memories = loadMemories();
+
+    function saveMemories() {
+        localStorage.setItem(getStorageKey(currentFamilyKey), JSON.stringify(memories));
     }
-    
-    function refreshMemoriesUI() {
+
+    function renderMemories() {
         const container = document.getElementById('memoriesContainer');
         if (!container) return;
-        
         if (memories.length === 0) {
-            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem;"><i class="fas fa-heart"></i> No memories yet — be the first to add one!</div>`;
+            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem;">✨ No memories yet — add the first one!</div>`;
             return;
         }
-        
         container.innerHTML = memories.map(mem => {
-            const imgHtml = mem.imageData 
-                ? `<img src="${mem.imageData}" alt="memory">`
-                : `<div class="img-placeholder"><i class="fas fa-camera"></i><br>📸</div>`;
+            const imgHtml = mem.imageData ? `<img src="${mem.imageData}" alt="memory">` : `<div class="img-placeholder"><i class="fas fa-camera"></i><br>📸</div>`;
             const dateStr = mem.createdAt ? new Date(mem.createdAt).toLocaleString() : "Mother's Day";
             return `
                 <div class="memory-card" data-id="${mem.id}">
-                    <div class="card-img">
-                        ${imgHtml}
-                    </div>
+                    <div class="card-img">${imgHtml}</div>
                     <div class="card-content">
-                        <div class="card-title">
-                            ${escapeHtml(mem.title)}
-                        </div>
-                        <div class="card-message">
-                            ${escapeHtml(mem.message || "💖")}
-                        </div>
+                        <div class="card-title">${escapeHtml(mem.title)}</div>
+                        <div class="card-message">${escapeHtml(mem.message || "💖")}</div>
                         <div class="card-date">
-                            <span><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                            <span>${dateStr}</span>
                             <button class="delete-memory" data-id="${mem.id}"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
-        
-        // Attach delete events
+        // attach delete events
         document.querySelectorAll('.delete-memory').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = btn.getAttribute('data-id');
                 if (id && confirm("Remove this memory?")) {
                     memories = memories.filter(m => m.id !== id);
-                    saveMemoriesToKey(currentFamilyKey, memories);
-                    refreshMemoriesUI();
+                    saveMemories();
+                    renderMemories();
                     showStatus("✨ Memory removed", "#c25b3a");
                 }
             });
         });
     }
-    
+
     function escapeHtml(str) {
         if (!str) return "";
         return str.replace(/[&<>]/g, function(m) {
@@ -443,109 +352,103 @@
             return m;
         });
     }
-    
-    function showStatus(msg, color = "#c06748") {
-        const statusDiv = document.getElementById('formStatus');
-        statusDiv.innerHTML = `<i class="fas fa-heart"></i> ${msg}`;
-        statusDiv.style.color = color;
-        setTimeout(() => { if (statusDiv.innerHTML.includes(msg)) statusDiv.innerHTML = ""; }, 3000);
+
+    function showStatus(msg, color = "#b85633") {
+        const div = document.getElementById('formStatus');
+        div.innerHTML = `<i class="fas fa-heart"></i> ${msg}`;
+        div.style.color = color;
+        setTimeout(() => { if (div.innerHTML.includes(msg)) div.innerHTML = ""; }, 3000);
     }
-    
+
     // Add memory with compression
-    async function addMemoryWithCompression() {
+    async function addMemory() {
         const title = document.getElementById('memoryTitle').value.trim();
         const message = document.getElementById('memoryMessage').value.trim();
-        const fileInput = document.getElementById('memoryImage');
-        const file = fileInput.files[0];
-        
+        const file = document.getElementById('memoryImage').files[0];
         if (!title) {
-            showStatus("💝 Please add a title!", "#c25b3a");
+            showStatus("Please add a title 💝", "#c25b3a");
             return;
         }
-        
-        let finalImageData = null;
-        
+        let imageData = null;
         if (file) {
-            const sizeMB = file.size / (1024 * 1024);
-            showStatus(`📸 Compressing image (${sizeMB.toFixed(1)}MB)...`, "#b85633");
-            
+            const sizeMB = file.size / (1024*1024);
+            if (sizeMB > 0.5) showStatus(`Compressing image (${sizeMB.toFixed(1)}MB)...`, "#b85633");
             try {
-                // Compress to max width 800px, quality 0.8
-                const compressed = await compressImage(file, 800, 0.8);
-                finalImageData = compressed;
-                showStatus(`✅ Image compressed & ready!`, "#5fa03e");
+                imageData = await compressImage(file, 800, 0.8);
+                showStatus("✅ Image compressed & added!", "#5fa03e");
             } catch(err) {
-                console.error(err);
-                showStatus(`❌ Failed to compress, using original (might be large)`, "#c25b3a");
-                // Fallback: read as is
+                showStatus("⚠️ Couldn't compress, using original", "#c25b3a");
                 const reader = new FileReader();
-                await new Promise((resolve) => {
-                    reader.onload = (e) => { finalImageData = e.target.result; resolve(); };
+                imageData = await new Promise((resolve) => {
+                    reader.onload = (e) => resolve(e.target.result);
                     reader.readAsDataURL(file);
                 });
             }
         }
-        
-        const newMemory = {
+        const newMem = {
             id: Date.now() + "-" + Math.random().toString(36).substr(2, 6),
             title: title,
-            message: message || "Sending all my love ❤️",
-            imageData: finalImageData,
-            createdAt: new Date().toISOString(),
-            author: "Family"
+            message: message || "Sending love ❤️",
+            imageData: imageData,
+            createdAt: new Date().toISOString()
         };
-        
-        memories.unshift(newMemory);
-        saveMemoriesToKey(currentFamilyKey, memories);
-        refreshMemoriesUI();
-        
-        // Reset form
+        memories.unshift(newMem);
+        saveMemories();
+        renderMemories();
         document.getElementById('memoryTitle').value = '';
         document.getElementById('memoryMessage').value = '';
-        fileInput.value = '';
-        showStatus(`🎉 "${title}" added to the family wall! Mom will be so happy.`, "#b85633");
+        document.getElementById('memoryImage').value = '';
+        showStatus(`🎉 "${title}" added to the family wall!`, "#b85633");
     }
-    
-    function switchFamilyKey(newKey) {
-        if (!newKey || newKey.trim() === "") {
-            newKey = "default_mom_memories";
+
+    // Update shareable link display
+    function updateShareableLink() {
+        const linkInput = document.getElementById('shareableLinkInput');
+        if (linkInput) {
+            let url = window.location.href.split('#')[0];
+            linkInput.value = url + '#' + currentFamilyKey;
         }
+    }
+
+    // Create a new family key (random)
+    function createNewFamilyKey() {
+        let newKey = "Mom" + Math.floor(Math.random() * 1000000);
+        window.location.hash = newKey;
         currentFamilyKey = newKey;
-        localStorage.setItem("current_family_key", currentFamilyKey);
-        memories = loadMemoriesFromKey(currentFamilyKey);
-        refreshMemoriesUI();
-        showStatus(`🔑 Switched to family key: "${currentFamilyKey}" — everyone with this key sees the same wall!`, "#5fa03e");
+        localStorage.setItem('last_family_key', currentFamilyKey);
+        memories = loadMemories();
+        renderMemories();
+        updateShareableLink();
+        showStatus(`🔑 New family key created! Share this link with family.`, "#5fa03e");
     }
-    
-    // Setup event listeners
-    document.getElementById('addMemoryBtn').addEventListener('click', addMemoryWithCompression);
-    document.getElementById('loadFamilyKeyBtn').addEventListener('click', () => {
-        const newKey = document.getElementById('familyKeyInput').value.trim();
-        if (newKey) {
-            switchFamilyKey(newKey);
-            document.getElementById('familyKeyInput').value = '';
-        } else {
-            showStatus("Please enter a family key (e.g., 'SmithFamily2025')", "#c25b3a");
+
+    // Copy link to clipboard
+    function copyShareableLink() {
+        const linkInput = document.getElementById('shareableLinkInput');
+        linkInput.select();
+        document.execCommand('copy');
+        showStatus("📋 Link copied! Send it to your family.", "#5fa03e");
+    }
+
+    // Listen for hash changes (if user clicks a shared link while page open)
+    window.addEventListener('hashchange', () => {
+        let newKey = window.location.hash.substring(1);
+        if (newKey && newKey !== currentFamilyKey) {
+            currentFamilyKey = newKey;
+            localStorage.setItem('last_family_key', currentFamilyKey);
+            memories = loadMemories();
+            renderMemories();
+            updateShareableLink();
+            showStatus(`Switched to family wall: ${currentFamilyKey}`, "#5fa03e");
         }
     });
-    document.getElementById('resetToDefaultKey').addEventListener('click', () => {
-        const newKey = prompt("Create a new family key (share this with your family):", "MothersDay" + Math.floor(Math.random()*10000));
-        if (newKey && newKey.trim()) {
-            switchFamilyKey(newKey.trim());
-        }
-    });
-    
-    // Load initial
-    const savedKey = localStorage.getItem("current_family_key");
-    if (savedKey) currentFamilyKey = savedKey;
-    memories = loadMemoriesFromKey(currentFamilyKey);
-    refreshMemoriesUI();
-    
-    // Optional: display current key hint
-    const keyHintDiv = document.querySelector('.key-hint');
-    if (keyHintDiv) {
-        keyHintDiv.innerHTML = `<i class="fas fa-info-circle"></i> Current family key: "<strong>${currentFamilyKey}</strong>" — share this with everyone in your family so they see the same memories!`;
-    }
+
+    // Initialize
+    document.getElementById('addMemoryBtn').addEventListener('click', addMemory);
+    document.getElementById('copyLinkBtn').addEventListener('click', copyShareableLink);
+    document.getElementById('newFamilyKeyBtn').addEventListener('click', createNewFamilyKey);
+    updateShareableLink();
+    renderMemories();
 </script>
 </body>
 </html>
